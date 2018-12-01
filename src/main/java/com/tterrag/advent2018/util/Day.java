@@ -2,12 +2,14 @@ package com.tterrag.advent2018.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,8 +38,11 @@ public abstract class Day implements Runnable {
 
     @Override
     public final void run() {
+        long before = System.nanoTime();
         Result res = doParts();
-        System.out.printf("Part 1: %s\nPart 2: %s\n\n", res.getP1(), res.getP2());
+        long after = System.nanoTime();
+        System.out.printf("Part 1: %s\nPart 2: %s\n", res.getP1(), res.getP2());
+        System.out.printf("Completed in %.4fs\n\n", (after - before) / 1_000_000_000f);
     }
 
     protected String part1() {
