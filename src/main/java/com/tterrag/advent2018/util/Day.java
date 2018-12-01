@@ -2,14 +2,12 @@ package com.tterrag.advent2018.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
