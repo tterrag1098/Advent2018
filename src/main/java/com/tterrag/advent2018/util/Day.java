@@ -26,13 +26,13 @@ public abstract class Day implements Runnable {
         public Result(Object p1, Object p2) {
             this(Objects.toString(p1), Objects.toString(p2));
         }
-
-        public Result(int p1, int p2) {
-            this(Integer.toString(p1), Integer.toString(p2));
-        }
         
         public Result(long p1, long p2) {
             this(Long.toString(p1), Long.toString(p2));
+        }
+        
+        public Result(double p1, double p2) {
+            this(Double.toString(p1), Double.toString(p2));
         }
     }
 
