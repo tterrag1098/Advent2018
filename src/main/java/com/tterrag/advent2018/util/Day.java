@@ -30,6 +30,10 @@ public abstract class Day implements Runnable {
         public Result(int p1, int p2) {
             this(Integer.toString(p1), Integer.toString(p2));
         }
+        
+        public Result(long p1, long p2) {
+            this(Long.toString(p1), Long.toString(p2));
+        }
     }
 
     private final List<String> lines = new ArrayList<>();
