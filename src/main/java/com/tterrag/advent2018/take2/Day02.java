@@ -23,7 +23,6 @@ public class Day02 extends Day {
     @Override
     protected Object part2() {
         String[] lines = linesArray();
-        String answer = null;
         for (int i = 0; i < lines.length; i++) {
             for (int j = i + 1; j < lines.length; j++) {
                 String s = lines[i], s2 = lines[j];
@@ -38,8 +37,7 @@ public class Day02 extends Day {
                 }
                 if (missing == 1) {
                     int[] intersect = s.chars().filter(c -> s2.indexOf((char) c) != -1).toArray();
-                    answer = new String(intersect, 0, intersect.length);
-                    return answer;
+                    return new String(intersect, 0, intersect.length);
                 }
             }
         }
