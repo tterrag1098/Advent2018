@@ -1,6 +1,5 @@
 package com.tterrag.advent2018.take2;
 
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,28 +19,27 @@ public class Day02 extends Day {
     protected Result doParts() {
         long part1 = lines().filter(s -> hasLetterCount(s, 2)).count() * lines().filter(s -> hasLetterCount(s, 3)).count();
         
-        List<String> lines = linesList();
+        String[] lines = linesArray();
         String part2 = null;
-        int closest = Integer.MAX_VALUE;
-        for (String s : lines) {
-            for (String s2 : lines) {
+        for (int i = 0; i < lines.length; i++) {
+            for (int j = i + 1; j < lines.length; j++) {
+                String s = lines[i], s2 = lines[j];
                 if (s.equals(s2)) continue;
                 int missing = 0;
                 char[] chars1 = s.toCharArray();
                 char[] chars2 = s2.toCharArray();
-                for (int i = 0; i < chars1.length; i++) {
-                    if (chars1[i] != chars2[i]) {
+                for (int c = 0; c < chars1.length && missing <= 1; c++) {
+                    if (chars1[c] != chars2[c]) {
                         missing++;
                     }
                 }
-                if (missing < closest) {
-                    closest = missing;
+                if (missing == 1) {
                     int[] intersect = s.chars().filter(c -> s2.indexOf((char) c) != -1).toArray();
                     part2 = new String(intersect, 0, intersect.length);
+                    return new Result(part1, part2);
                 }
             }
         }
-
-        return new Result(part1, part2);
+        throw new IllegalStateException("Did not find part 2 answer!");
     }
 }

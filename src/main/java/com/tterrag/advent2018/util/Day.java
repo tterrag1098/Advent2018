@@ -78,6 +78,10 @@ public abstract class Day implements Runnable {
     protected List<String> linesList() {
         return lines().collect(Collectors.toList());
     }
+    
+    protected String[] linesArray() {
+        return lines().toArray(String[]::new);
+    }
 
     protected <T> Stream<T> parse(Function<String, T> parser) {
         return lines().map(parser);
