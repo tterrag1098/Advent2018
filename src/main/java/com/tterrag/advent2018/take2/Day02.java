@@ -36,7 +36,8 @@ public class Day02 extends Day {
                 }
                 if (missing < closest) {
                     closest = missing;
-                    part2 = s.chars().filter(c -> s2.contains("" + ((char) c))).mapToObj(c -> "" + (char) c).collect(Collectors.joining());
+                    int[] intersect = s.chars().filter(c -> s2.indexOf((char) c) != -1).toArray();
+                    part2 = new String(intersect, 0, intersect.length);
                 }
             }
         }
