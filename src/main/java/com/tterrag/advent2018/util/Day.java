@@ -47,11 +47,11 @@ public abstract class Day implements Runnable {
         System.out.printf("Completed in %.4fs\n\n", (after - before) / 1_000_000_000f);
     }
 
-    protected String part1() {
+    protected Object part1() {
         throw new UnsupportedOperationException();
     }
 
-    protected String part2() {
+    protected Object part2() {
         throw new UnsupportedOperationException();
     }
 

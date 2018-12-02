@@ -16,11 +16,14 @@ public class Day02 extends Day {
     }
 
     @Override
-    protected Result doParts() {
-        long part1 = lines().filter(s -> hasLetterCount(s, 2)).count() * lines().filter(s -> hasLetterCount(s, 3)).count();
-        
+    protected Object part1() {
+        return lines().filter(s -> hasLetterCount(s, 2)).count() * lines().filter(s -> hasLetterCount(s, 3)).count();
+    }
+    
+    @Override
+    protected Object part2() {
         String[] lines = linesArray();
-        String part2 = null;
+        String answer = null;
         for (int i = 0; i < lines.length; i++) {
             for (int j = i + 1; j < lines.length; j++) {
                 String s = lines[i], s2 = lines[j];
@@ -35,11 +38,11 @@ public class Day02 extends Day {
                 }
                 if (missing == 1) {
                     int[] intersect = s.chars().filter(c -> s2.indexOf((char) c) != -1).toArray();
-                    part2 = new String(intersect, 0, intersect.length);
-                    return new Result(part1, part2);
+                    answer = new String(intersect, 0, intersect.length);
+                    return answer;
                 }
             }
         }
-        throw new IllegalStateException("Did not find part 2 answer!");
+        return null;
     }
 }
