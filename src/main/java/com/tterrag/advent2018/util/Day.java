@@ -1,13 +1,15 @@
 package com.tterrag.advent2018.util;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +42,7 @@ public abstract class Day implements Runnable {
 
     @Override
     public final void run() {
+        lines(); // Cache file IO so it doesn't affect runtime
         long before = System.nanoTime();
         Result res = doParts();
         long after = System.nanoTime();
@@ -59,28 +62,26 @@ public abstract class Day implements Runnable {
         return new Result(part1(), part2());
     }
 
-    protected Stream<String> lines() {
+    protected List<String> linesList() {
         if (lines.isEmpty()) {
             Class<?> cls = getClass();
             String filename = cls.getSimpleName().toLowerCase(Locale.ROOT);
-            try (InputStream data = cls.getResourceAsStream("/" + filename + ".txt");
-                 Scanner scan = new Scanner(data)) {
-                while (scan.hasNextLine()) {
-                    lines.add(scan.nextLine());
-                }
-            } catch (IOException e) {
+            try {
+                Path path = Paths.get(cls.getResource("/" + filename + ".txt").toURI());
+                lines.addAll(Files.readAllLines(path));
+            } catch (URISyntaxException | IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        return lines.stream();
+        return lines;
     }
 
-    protected List<String> linesList() {
-        return lines().collect(Collectors.toList());
+    protected Stream<String> lines() {
+        return linesList().stream();
     }
     
     protected String[] linesArray() {
-        return lines().toArray(String[]::new);
+        return linesList().toArray(String[]::new);
     }
 
     protected <T> Stream<T> parse(Function<String, T> parser) {
