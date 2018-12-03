@@ -1,10 +1,11 @@
 package com.tterrag.advent2018.util;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,10 +67,14 @@ public abstract class Day implements Runnable {
         if (lines.isEmpty()) {
             Class<?> cls = getClass();
             String filename = cls.getSimpleName().toLowerCase(Locale.ROOT);
-            try {
-                Path path = Paths.get(cls.getResource("/" + filename + ".txt").toURI());
-                lines.addAll(Files.readAllLines(path));
-            } catch (URISyntaxException | IOException e) {
+            String path = "/" + filename + ".txt";
+            InputStream in = cls.getResourceAsStream(path);
+            if (in == null) {
+                throw new IllegalStateException("Could not find " + path);
+            }
+            try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                lines.addAll(r.lines().collect(Collectors.toList()));
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }

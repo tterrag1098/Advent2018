@@ -20,7 +20,7 @@ public class Main {
     private static boolean runDay(int day) {
         Class<?> dayClass;
         try {
-            dayClass = Class.forName(Main.class.getCanonicalName().replaceAll("Main", "Day" + String.format("%02d", day)));
+            dayClass = Class.forName(Main.class.getCanonicalName().replaceAll("Main", "days.Day" + String.format("%02d", day)));
 
             System.out.println("Day " + day + ": ");
             Method m = dayClass.getDeclaredMethod("main", String[].class);
@@ -30,6 +30,7 @@ public class Main {
             return true;
         } catch (ClassNotFoundException e) {
             System.out.println("Could not find day " + day);
+            e.printStackTrace();
             return false;
         } catch (NoSuchMethodException | SecurityException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
