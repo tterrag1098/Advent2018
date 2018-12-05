@@ -15,7 +15,7 @@ public class Day05 extends Day {
         return (char) (c > 96 ? c - 32 : c + 32);
     }
     
-    private String react(String in) {
+    private int react(String in) {
         Deque<Character> res = new ArrayDeque<>();
         for (char c : in.toCharArray()) {
             if (!res.isEmpty()) {
@@ -29,14 +29,14 @@ public class Day05 extends Day {
                 res.push(c);
             }
         }
-        return res.stream().reduce(new StringBuilder(), (s, c) -> s.append((char) c), StringBuilder::append).toString();
+        return res.size();
     }
     
     private final String polymer = blob(); 
     
     @Override
     protected Object part1() {
-        return react(polymer).length();
+        return react(polymer);
     }
     
     @Override
@@ -44,7 +44,7 @@ public class Day05 extends Day {
         int shortest = Integer.MAX_VALUE;
         for (char c = 'a'; c <= 'z'; c++) {
             String s = polymer.replace("" + c, "").replace("" + pairOf(c), "");
-            int len = react(s).length();
+            int len = react(s);
             if (len < shortest) {
                 shortest = len;
             }
