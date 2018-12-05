@@ -1,4 +1,4 @@
-(ns advent-2017.day05)
+(ns advent-2018.day05)
 
 (def input (slurp (clojure.java.io/resource "day05.txt")))
 
