@@ -12,7 +12,7 @@ public class Day05 extends Day {
     }
     
     private char pairOf(char c) {
-        return (char) (c > 96 ? c - 32 : c + 32);
+        return (char) (c ^ 0x20);
     }
     
     private int react(String in) {
