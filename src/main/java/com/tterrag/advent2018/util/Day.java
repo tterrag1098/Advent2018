@@ -65,15 +65,19 @@ public abstract class Day implements Runnable {
         String filename = getClass().getSimpleName().toLowerCase(Locale.ROOT);
         return "/" + filename + ".txt";
     }
+
+    protected Stream<String> inputStream(BufferedReader r) {
+        return r.lines();
+    }
     
-    protected Stream<String> fileData() {
+    protected final List<String> fileData() {
         String path = getResourceName();
         InputStream in = getClass().getResourceAsStream(path);
         if (in == null) {
             throw new IllegalStateException("Could not find " + path);
         }
         try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-            return r.lines();
+            return inputStream(r).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +85,7 @@ public abstract class Day implements Runnable {
 
     protected List<String> linesList() {
         if (lines.isEmpty()) {
-            lines.addAll(fileData().collect(Collectors.toList()));
+            lines.addAll(fileData());
         }
         return lines;
     }
