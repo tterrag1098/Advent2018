@@ -41,7 +41,9 @@ public abstract class Day implements Runnable {
 
     @Override
     public final void run() {
-        lines(); // Cache file IO so it doesn't affect runtime
+        try {
+            lines(); // Cache file IO so it doesn't affect runtime
+        } catch (Exception e) {}
         long before = System.nanoTime();
         Result res = doParts();
         long after = System.nanoTime();
