@@ -1,21 +1,16 @@
 package com.tterrag.advent2018.days;
 
-import java.io.BufferedReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.tterrag.advent2018.util.Day;
 
@@ -30,79 +25,13 @@ public class Day15 extends Day {
     public static void main(String[] args) {
         new Day15().run();
     }
-    
-//    @Override
-//    protected Stream<String> inputStream(BufferedReader r) {
-//        return ("#######\n" + 
-//                "#.G...#\n" + 
-//                "#...EG#\n" + 
-//                "#.#.#G#\n" + 
-//                "#..G#E#\n" + 
-//                "#.....#\n" + 
-//                "#######").lines();
-//    }
-//    
-//  @Override
-//  protected Stream<String> inputStream(BufferedReader r) {
-//      return ("#######\n" + 
-//              "#G..#E#\n" + 
-//              "#E#E.E#\n" + 
-//              "#G.##.#\n" + 
-//              "#...#E#\n" + 
-//              "#...E.#\n" + 
-//              "#######").lines();
-//  }
-    
-//  @Override
-//  protected Stream<String> inputStream(BufferedReader r) {
-//      return ("#######\n" + 
-//              "#E..EG#\n" + 
-//              "#.#G.E#\n" + 
-//              "#E.##E#\n" + 
-//              "#G..#.#\n" + 
-//              "#..E#.#\n" + 
-//              "#######").lines();
-//  }
-//  @Override
-//  protected Stream<String> inputStream(BufferedReader r) {
-//      return ("#######\n" + 
-//              "#E.G#.#\n" + 
-//              "#.#G..#\n" + 
-//              "#G.#.G#\n" + 
-//              "#G..#.#\n" + 
-//              "#...E.#\n" + 
-//              "#######").lines();
-//  }
-//  @Override
-//  protected Stream<String> inputStream(BufferedReader r) {
-//      return ("#######\n" + 
-//              "#.E...#\n" + 
-//              "#.#..G#\n" + 
-//              "#.###.#\n" + 
-//              "#E#G#G#\n" + 
-//              "#...#G#\n" + 
-//              "#######").lines();
-//  }
-//    
-//  @Override
-//  protected Stream<String> inputStream(BufferedReader r) {
-//      return ("#########\n" + 
-//              "#G......#\n" + 
-//              "#.E.#...#\n" + 
-//              "#..##..G#\n" + 
-//              "#...##..#\n" + 
-//              "#...#...#\n" + 
-//              "#.G...G.#\n" + 
-//              "#.....G.#\n" + 
-//              "#########").lines();
-//  }
+ 
     @RequiredArgsConstructor
     enum State {
         EMPTY('.'),
         WALL('#'),
         ELF('E'),
-        GOBLIN('G'),
-        ;
+        GOBLIN('G');
         
         final char key;
         
@@ -121,8 +50,8 @@ public class Day15 extends Day {
         UP(0, -1),
         LEFT(-1, 0),
         RIGHT(1, 0),
-        DOWN(0, 1),
-        ;
+        DOWN(0, 1);
+        
         public final int x, y;
     }
     
@@ -147,8 +76,8 @@ public class Day15 extends Day {
             this.y = y;
         }
         
-        void attack() {
-            hp -= 3;
+        void attack(int strength) {
+            hp -= strength;
         }
         
         boolean isDead() {
@@ -163,13 +92,6 @@ public class Day15 extends Day {
             return COMPARATOR.compare(this, o);
         }
     }
-    
-    private final State[][] input = parse(String::chars)
-                                   .map(chars -> chars.mapToObj(c -> State.byKey((char) c))
-                                                      .toArray(State[]::new))
-                                   .toArray(State[][]::new);
-    
-    private final List<Unit> units = new ArrayList<>();
     
     @Value
     @ToString(includeFieldNames = false)
@@ -193,12 +115,24 @@ public class Day15 extends Day {
         }
     }
     
-    private Unit getUnit(int x, int y) {
-        return units.stream().filter(u -> u.x == x && u.y == y).findFirst().orElseThrow(IllegalArgumentException::new);
+    @Value
+    private static class SimResult {
+        int turns;
+        List<Unit> units;
+        
+        int getOutcome() {
+            return units.stream().filter(u -> !u.isDead()).mapToInt(Unit::getHp).sum() * turns;
+        }
     }
+    
+    private SimResult sim(int elfStrength) {
+        State[][] input = parse(String::chars)
+                         .map(chars -> chars.mapToObj(c -> State.byKey((char) c))
+                                            .toArray(State[]::new))
+                         .toArray(State[][]::new);
 
-    @Override
-    protected Result doParts() {
+        List<Unit> units = new ArrayList<>();
+        
         for (int y = 0; y < input.length; y++) {
             for (int x = 0; x < input.length; x++) {
                 State state = input[y][x];
@@ -207,29 +141,18 @@ public class Day15 extends Day {
                 }
             }
         }
-        
-        for (int y = 0; y < input.length; y++) {
-            for (int x = 0; x < input[0].length; x++) {
-                System.out.print(input[y][x].key);
-            }
-            System.out.println();
-        }
-        System.out.println();
-        
+
         int turns = 0;
         main:
         while (true) {
             Collections.sort(units);
-            System.out.println(turns + ": " + Arrays.toString(units.stream().map(u -> u.type.key + "(" + u.hp + ")").toArray()));
-
             for (Unit u : units) {
+                if (u.isDead()) {
+                    continue;
+                }
                 
                 if (units.stream().filter(un -> !un.isDead()).collect(Collectors.groupingBy(Unit::getType)).size() == 1) {
                     break main;
-                }
-
-                if (u.isDead()) {
-                    continue;
                 }
                 Queue<Node> search = new ArrayDeque<>();
                 Set<Node> seen = new HashSet<>();
@@ -243,7 +166,7 @@ public class Day15 extends Day {
                             State stateAt = input[candidate.y][candidate.x];
                             if (stateAt == State.EMPTY) {
                                 search.add(candidate);
-                            } else if (stateAt != State.WALL && stateAt != u.type && !getUnit(candidate.x, candidate.y).isDead()) {
+                            } else if (stateAt != State.WALL && stateAt != u.type && !getUnit(units, candidate.x, candidate.y).isDead()) {
                                 found.add(head);
                             }
                         }
@@ -263,50 +186,39 @@ public class Day15 extends Day {
                 for (Direction d : Direction.values()) {
                     State neighbor = input[u.y + d.y][u.x + d.x];
                     if (u.getType() != neighbor && neighbor != State.WALL && neighbor != State.EMPTY) {
-                        Unit target = getUnit(u.x + d.x, u.y + d.y);
+                        Unit target = getUnit(units, u.x + d.x, u.y + d.y);
                         if (!target.isDead()) {
                             neighbors.add(target);
                         }
                     }
                 }
-                Optional<Unit> target = neighbors.stream().sorted(Comparator.comparingInt(Unit::getHp).thenComparing(Function.identity())).findFirst();
-                if (target.isPresent()) {
-                    target.get().attack();
-                }
+                neighbors.stream().sorted(Comparator.comparingInt(Unit::getHp).thenComparing(Function.identity())).findFirst().ifPresent(target -> {
+                    target.attack(u.type == State.ELF ? elfStrength : 3);
+                    if (target.isDead()) {
+                        input[target.y][target.x] = State.EMPTY;
+                    }
+                });
             }
-
-            
-            Iterator<Unit> iter = units.iterator();
-            while (iter.hasNext()) {
-                Unit u = iter.next();
-                if (u.isDead()) {
-                    iter.remove();
-                    input[u.y][u.x] = State.EMPTY;
-                }
-            }
-
-            for (int y = 0; y < input.length; y++) {
-                for (int x = 0; x < input[0].length; x++) {
-                    System.out.print(input[y][x].key);
-                }
-                System.out.println();
-            }
-            System.out.println();
             
             turns++;
-            
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
-        units.removeIf(Unit::isDead);
-        
-        Collections.sort(units);
-        System.out.println(turns + ": " + Arrays.toString(units.stream().map(u -> u.type.key + "(" + u.hp + ")").toArray()));
 
-        return new Result(units.stream().mapToInt(Unit::getHp).sum() * turns, "");
+        return new SimResult(turns, units);
+    }
+    
+    private Unit getUnit(List<Unit> units, int x, int y) {
+        return units.stream().filter(u -> !u.isDead()).filter(u -> u.x == x && u.y == y).findFirst().orElseThrow(IllegalArgumentException::new);
+    }
+
+    @Override
+    protected Result doParts() {
+        SimResult part1 = sim(3);
+        
+        SimResult part2 = part1;
+        for (int elfScore = 4; part2.getUnits().stream().filter(u -> u.getType() == State.ELF).filter(Unit::isDead).count() > 0; elfScore++) {
+            part2 = sim(elfScore);
+        }
+        
+        return new Result(part1.getOutcome(), part2.getOutcome());
     }
 }
