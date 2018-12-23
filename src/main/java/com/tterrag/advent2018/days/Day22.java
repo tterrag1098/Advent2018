@@ -1,6 +1,7 @@
 package com.tterrag.advent2018.days;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -160,6 +161,10 @@ public class Day22 extends Day {
     private Type getType(Map<Point, Long> cache, int x, int y) {
         return Type.fromErosion(getErosion(cache, x, y));
     }
+    
+    private int index(Node n) {
+        return (n.getPos().getX() << 17) | (n.getPos().getY() << 2) | n.getTool().ordinal();
+    }
 
     @Override
     protected Result doParts() {
@@ -178,12 +183,17 @@ public class Day22 extends Day {
         
         PriorityQueue<Node> search = new PriorityQueue<>(Comparator.comparingInt(Node::getTime));
         search.add(new Node(Tool.TORCH, 0, new Point(0, 0)));
-        Set<Node> seen = new HashSet<>();
+        
+        BitSet seen = new BitSet();
+        int[] timings = new int[200_000_000];
         
         Node endNode = new Node(Tool.TORCH, 0, target);
         
         while (!search.isEmpty()) {
             Node head = search.poll();
+            if (head.equals(endNode)) {
+                return new Result(risk, head.getTime());
+            }
             Type type = typeCache.get(head.getPos());
             Set<Node> validNext = new LinkedHashSet<>();
             Direction[] valid = Direction.valid(head.getPos());
@@ -194,19 +204,21 @@ public class Day22 extends Day {
                     validNext.add(next);
                 }
             }
-            if (validNext.size() < valid.length) {
-                for (Tool tool : Tool.values()) {
-                    if (tool != head.getTool() && type.canUse(tool)) {
-                        validNext.add(head.withTool(tool));
-                    }
+            for (Tool tool : Tool.values()) {
+                if (tool != head.getTool() && type.canUse(tool)) {
+                    validNext.add(head.withTool(tool));
                 }
             }
-            validNext.removeIf(seen::contains);
-            if (validNext.contains(endNode)) {
-                return new Result(risk, validNext.stream().filter(n -> n.equals(endNode)).findFirst().get().getTime());
-            }
-//            validNext.removeIf(n -> n.getPos().getX() > target.getX() + 1000 && n.getPos().getY() > target.getY() + 1000);
-            seen.addAll(validNext);
+            validNext.removeIf(n -> {
+                int time = n.getTime();
+                int oldtime = timings[index(n)];
+                if (oldtime == 0 || oldtime > time) {
+                    timings[index(n)] = time;
+                    return false;
+                }
+                return true;
+            });
+            validNext.forEach(n -> seen.set(index(n))); 
             search.addAll(validNext);
         }
         
