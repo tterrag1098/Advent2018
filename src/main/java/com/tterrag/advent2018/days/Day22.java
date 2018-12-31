@@ -1,18 +1,16 @@
 package com.tterrag.advent2018.days;
 
-import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
 import com.tterrag.advent2018.util.Day;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
@@ -82,52 +80,18 @@ public class Day22 extends Day {
     
     @Value
     @ToString(of = {"tool", "pos", "time"})
+    @EqualsAndHashCode(of = {"pos", "tool"})
     private static class Node {
         Tool tool;
         int time;
         Point pos;
-        List<Node> path = new ArrayList<>();
         
         Node move(Direction dir) {
-            Node ret = new Node(tool, time + 1, pos.move(dir));
-            ret.path.addAll(path);
-            ret.path.add(this);
-            return ret;
+            return new Node(tool, time + 1, pos.move(dir));
         }
         
         Node withTool(Tool tool) {
-            Node ret = new Node(tool, time + 7, pos);
-            ret.path.addAll(path);
-            ret.path.add(this);
-            return ret;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            Node other = (Node) obj;
-            if (pos == null) {
-                if (other.pos != null)
-                    return false;
-            } else if (!pos.equals(other.pos))
-                return false;
-            if (tool != other.tool)
-                return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((pos == null) ? 0 : pos.hashCode());
-            result = prime * result + ((tool == null) ? 0 : tool.hashCode());
-            return result;
+            return new Node(tool, time + 7, pos);
         }
     }
     
@@ -183,7 +147,6 @@ public class Day22 extends Day {
         PriorityQueue<Node> search = new PriorityQueue<>(Comparator.comparingInt(Node::getTime));
         search.add(new Node(Tool.TORCH, 0, new Point(0, 0)));
         
-        BitSet seen = new BitSet();
         int[] timings = new int[200_000_000];
         
         Node endNode = new Node(Tool.TORCH, 0, target);
@@ -217,7 +180,6 @@ public class Day22 extends Day {
                 }
                 return true;
             });
-            validNext.forEach(n -> seen.set(index(n))); 
             search.addAll(validNext);
         }
         
