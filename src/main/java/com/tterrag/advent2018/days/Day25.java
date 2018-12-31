@@ -1,16 +1,13 @@
 package com.tterrag.advent2018.days;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import lombok.Value;
 
 import com.tterrag.advent2018.util.Day;
+
+import lombok.Value;
 
 public class Day25 extends Day {
 

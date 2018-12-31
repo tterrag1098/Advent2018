@@ -37,18 +37,7 @@ public class Day03 extends Day {
             }
             return false;
         }
-        
-        boolean collides(Claim other) {
-            return inside(other.getX(), other.getY())
-                || inside(other.getX() + other.getW() - 1, other.getY())
-                || inside(other.getX() + other.getW() - 1, other.getY() + other.getH() - 1)
-                || inside(other.getX(), other.getY() + other.getH() - 1);
-        }
-        
-        boolean inside(int x, int y) {
-            return x >= this.x && x < this.x + w && y >= this.y && y < this.y + h;
-        }
-        
+
         private static Pattern PATTERN = Pattern.compile("#(\\d+)\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)");
         
         static Claim parse(String s) {

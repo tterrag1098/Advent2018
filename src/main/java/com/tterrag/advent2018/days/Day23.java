@@ -1,7 +1,5 @@
 package com.tterrag.advent2018.days;
 
-import java.io.BufferedReader;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.IntSummaryStatistics;
@@ -23,11 +21,6 @@ public class Day23 extends Day {
     public static void main(String[] args) {
         new Day23().run();
     }
-    
-//    @Override
-//    protected Stream<String> inputStream(BufferedReader r) {
-//    	return Arrays.stream(("pos=<10,12,12>, r=2\r\npos=<12,14,12>, r=2\r\npos=<16,12,12>, r=4\r\npos=<14,14,14>, r=6\r\npos=<50,50,50>, r=200\r\npos=<10,10,10>, r=5").split("\r\n"));
-//    }
 
     @Value
     private static class Point {
@@ -200,13 +193,6 @@ public class Day23 extends Day {
     		int y = a.y < 0 ? y1 : y2;
     		int z = a.z < 0 ? z1 : z2;
     		return new Point(x, y, z);
-    	}
-    	
-    	int distanceToOrigin() {
-    		if (contains(new Point(0, 0, 0))) {
-    			return 0;
-    		}
-    		return vertices().mapToInt(p -> p.manhattanDistance(new Point(0, 0, 0))).min().getAsInt();
     	}
     }
     

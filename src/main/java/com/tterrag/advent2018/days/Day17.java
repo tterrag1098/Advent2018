@@ -1,7 +1,6 @@
 package com.tterrag.advent2018.days;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -9,43 +8,20 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.tterrag.advent2018.util.Day;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
-
-import com.tterrag.advent2018.util.Day;
 
 public class Day17 extends Day {
 
     public static void main(String[] args) {
         new Day17().run();
     }
-    
-//    @Override
-//    protected Stream<String> inputStream(BufferedReader r) {
-//        return Arrays.stream(("x=499, y=2..7\r\n" + 
-//                "y=7, x=495..501\r\n" + 
-//                "x=501, y=3..7\r\n" + 
-//                "x=498, y=2..4\r\n" + 
-//                "x=506, y=1..2\r\n" + 
-//                "x=498, y=10..13\r\n" + 
-//                "x=504, y=10..13\r\n" + 
-//                "y=13, x=498..504").split("\r\n"));
-//    }
-    
-//    @Override
-//    protected Stream<String> inputStream(BufferedReader r) {
-//        return Arrays.stream((
-//                "x=498, y=2..4\r\n" + 
-//                "x=506, y=1..2\r\n" + 
-//                "x=498, y=10..13\r\n" + 
-//                "x=504, y=10..13\r\n" + 
-//                "y=13, x=498..504").split("\r\n"));
-//    }
     
     @Value
     private static class Clay {
@@ -92,18 +68,6 @@ public class Day17 extends Day {
         return clayMap[y][x];
     }
     
-    private void printMap(Collection<Node> bounds, Predicate<Node> flowing, Predicate<Node> filled) {
-    	IntSummaryStatistics xStats = bounds.stream().mapToInt(Node::getX).summaryStatistics();
-    	IntSummaryStatistics yStats = bounds.stream().mapToInt(Node::getY).summaryStatistics();
-        for (int y = Math.max(0, yStats.getMin() - 10); y <= yStats.getMax() + 10 && y < clayMap.length; y++) {
-            for (int x = xStats.getMin() - 10; x <= xStats.getMax() + 10 && x < clayMap[0].length; x++) {
-                System.out.print(isClay(x, y) ? '#' : filled.test(new Node(null, x, y)) ? '~' : flowing.test(new Node(null, x, y)) ? '|' : '.');
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-    
     @Override
     protected Result doParts() {
         List<Clay> input = parseList(Clay::parse);
@@ -127,12 +91,9 @@ public class Day17 extends Day {
         Set<Node> filled = new HashSet<>();
         List<Node> flowHeads = new ArrayList<>();
         flowHeads.add(new Node(null, springX, minY));
-//        flowHeads.add(new Node(null, springX + 3, minY));
         while (!flowHeads.isEmpty()) {
-        	System.out.println(flowHeads.size());
         	Collections.sort(flowHeads, Comparator.comparingInt(Node::getY).reversed());
         	ListIterator<Node> iter = flowHeads.listIterator();
-//    		printMap(flowHeads, flowed::contains, filled::contains);
         	while (iter.hasNext()) {
         		Node head = iter.next();
         		if (head.getY() > yStats.getMax()) {
@@ -207,13 +168,6 @@ public class Day17 extends Day {
         			}
         		}
         	}
-        	
-//        	try {
-//				Thread.sleep(150);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
         }
         
         return new Result(flowed.size() + filled.size(), filled.size());
